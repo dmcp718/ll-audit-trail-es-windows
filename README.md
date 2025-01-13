@@ -29,7 +29,7 @@ This setup has been tested and verified with Docker Desktop running in Hyper-V m
 
 2. Run the setup script to configure the environment:
    ```powershell
-   .\setup.cmd
+   .\setup.cmd --fsmount LLFSMOUNTPOINT
    ```
 
 3. Start the Elastic Stack:
