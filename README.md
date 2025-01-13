@@ -1,6 +1,6 @@
-# Lucid Link Audit Trail - Windows Version
+# LucidLink Audit Trail - Windows Version
 
-This repository contains the Windows-compatible version of the Lucid Link Audit Trail system. It uses Docker Desktop with Hyper-V to monitor and collect audit logs from a Lucid Link mounted drive, sending them to Elasticsearch for analysis and visualization in Kibana.
+This repository contains the Windows-compatible version of a docker-compose stack that uses fluent-bit to send audit trail log data to Elasticsearch index. It uses Docker Desktop with Hyper-V to monitor and collect audit logs from a LucidLink mounted drive, sending them to Elasticsearch for analysis and visualization in Kibana.
 
 ## Prerequisites
 
