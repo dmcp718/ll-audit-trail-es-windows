@@ -110,4 +110,4 @@ docker logs elasticsearch-node1  # Check Elasticsearch logs
 
 ## Support
 
-For issues specific to the Windows version, please open an issue in this repository. For general Lucid Link related questions, contact Lucid Link support.
+THE SCRIPT IS PROVIDED “AS IS” AND “AS AVAILABLE” AND IS WITHOUT WARRANTY OF ANY KIND.
