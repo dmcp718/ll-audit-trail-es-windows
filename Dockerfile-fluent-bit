@@ -1,0 +1,24 @@
+FROM debian:latest
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Fluent Bit
+RUN curl https://raw.githubusercontent.com/fluent/fluent-bit/master/install.sh | sh
+
+# Create directories
+RUN mkdir -p /fluent-bit/etc /media/lucidlink
+
+# Copy configuration files
+COPY fs-audit-trail.yaml /fluent-bit/etc/fs-audit-trail.yaml
+COPY json-parser.conf /fluent-bit/etc/json-parser.conf
+
+# Set working directory
+WORKDIR /fluent-bit
+
+# Command to run Fluent Bit with the correct path
+CMD ["/opt/fluent-bit/bin/fluent-bit", "-c", "/fluent-bit/etc/fs-audit-trail.yaml", "-R", "/fluent-bit/etc/json-parser.conf"]

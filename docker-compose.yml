@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  elasticsearch-node1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: elasticsearch-node1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - bootstrap.memory_lock=true
+    volumes:
+      - elasticsearch-data1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elasticsearch-net
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    container_name: kibana
+    volumes:
+      - type: bind
+        source: .\kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+      - type: bind
+        source: .\imports.ndjson
+        target: /usr/share/kibana/saved_objects/imports.ndjson
+        read_only: true
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-node1:9200
+      - XPACK_SECURITY_ENABLED=false
+      - KBN_PATH_CONF=/usr/share/kibana/config
+    entrypoint: ["/usr/share/kibana/bin/kibana", "--allow-root"]
+    user: kibana
+    ports:
+      - 5601:5601
+    networks:
+      - elasticsearch-net
+    depends_on:
+      - elasticsearch-node1
+
+  kibana-setup:
+    image: curlimages/curl:latest
+    volumes:
+      - type: bind
+        source: .\imports.ndjson
+        target: /usr/share/kibana/saved_objects/imports.ndjson
+        read_only: true
+    entrypoint: ["curl", "-X", "POST", "http://kibana:5601/api/saved_objects/_import", "-H", "kbn-xsrf: true", "--form", "file=@/usr/share/kibana/saved_objects/imports.ndjson"]
+    networks:
+      - elasticsearch-net
+    depends_on:
+      - kibana
+
+  fluent-bit:
+    build:
+      context: .
+      dockerfile: Dockerfile-fluent-bit
+    container_name: fluent-bit
+    volumes:
+      - type: bind
+        source: .\fs-audit-trail.yaml
+        target: /fluent-bit/etc/fs-audit-trail.yaml
+        read_only: true
+      - type: bind
+        source: ./json-parser.conf
+        target: /fluent-bit/etc/parsers.conf
+        read_only: true
+      - 'L:/:/media/lucidlink:rw'
+      - type: volume
+        source: fluent-bit-db
+        target: /fluent-bit/db
+    environment:
+      - FB_LOG_LEVEL=info
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - elasticsearch-net
+    depends_on:
+      - elasticsearch-node1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  elasticsearch-data1:
+    driver: local
+  fluent-bit-db:
+    driver: local
+
+networks:
+  elasticsearch-net:
+    driver: bridge
