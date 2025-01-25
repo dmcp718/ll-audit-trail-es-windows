@@ -216,7 +216,3 @@ Remove-Item C:\fluent-bit\db\logs.db
   - Enable SSL/TLS
   - Implement proper access controls
   - Review and adjust resource limits
-
-## Support
-
-For issues specific to the Windows version, please open an issue in this repository. For general Lucid Link related questions, contact Lucid Link support.
