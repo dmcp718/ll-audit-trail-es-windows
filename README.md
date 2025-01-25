@@ -15,12 +15,7 @@ This repository contains the Windows-compatible version of sending LucidLink aud
 
 ## Docker Desktop Configuration
 
-This setup has been tested and verified with Docker Desktop running in Hyper-V mode (not WSL2). Follow these steps to configure Docker Desktop:
-
-1. Open Docker Desktop Settings
-2. Under "General", ensure "Use the WSL 2 based engine" is **unchecked**
-3. Under "Resources" > "File Sharing", add your Lucid Link mount point (L:\) to the list of shared drives
-4. Apply changes and wait for Docker Desktop to restart
+Start Docker Desktop and confirm that Engine is running.
 
 ## Installation
 
@@ -41,9 +36,9 @@ All setup and service management commands must be run from an Administrator Powe
    .\start_docker_compose.cmd
    ```
 
-3. Wait about 30 seconds for Elasticsearch to be ready. You can check the status at http://localhost:9200
+3. Wait about 30 seconds for Elasticsearch and Kibana to be ready. You can check the status at http://localhost:5601
 
-4. Run the setup script with your Lucid Link mount point:
+4. Run the setup script with your LucidLink mount point:
    ```powershell
    # Run as Administrator
    .\setup.cmd --fsmount "L:"
@@ -58,8 +53,8 @@ All setup and service management commands must be run from an Administrator Powe
 ## Accessing the Interface
 
 - **Kibana Dashboard**: http://localhost:5601
-  - Username: elastic
-  - Password: changeme (default, can be changed in docker-compose.yml)
+  - Username and Password not enabled
+  (default, can be changed in docker-compose.yml)
 
 ## Components
 
@@ -75,9 +70,9 @@ All setup and service management commands must be run from an Administrator Powe
   - Includes pre-configured dashboards and visualizations
   - Runs as non-root user for enhanced security
 
-- **Fluent Bit**: Log collector that monitors the Lucid Link audit trail
+- **Fluent Bit**: Log collector that monitors the LucidLink audit trail
   - Monitors: L:\.lucid_audit directory recursively
-  - Parser: Custom JSON parser for Lucid Link audit format
+  - Parser: Custom JSON parser for LucidLink audit format
   - Buffer: Uses persistent SQLite database (C:\fluent-bit\db\logs.db)
   - Features:
     - Automatic timestamp parsing (Unix microseconds to ISO 8601)
@@ -108,7 +103,7 @@ All setup and service management commands must be run from an Administrator Powe
 
 ## Data Flow
 
-1. Lucid Link generates audit logs in JSON format
+1. LucidLink generates audit logs in JSON format
 2. Fluent Bit monitors the audit directory for new log files
 3. Logs are parsed using a two-stage process:
    - First parse: Outer JSON structure
