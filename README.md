@@ -1,20 +1,12 @@
-# Lucid Link Audit Trail - Windows Version
+# Lucid Link Audit Trail >> Elasticsearch and Kibana - Windows Version
 
-This repository contains the Windows-compatible version of the Lucid Link Audit Trail system. It uses Docker Desktop with Hyper-V to monitor and collect audit logs from a Lucid Link mounted drive, sending them to Elasticsearch for analysis and visualization in Kibana.
-
-## Prerequisites
-
-- Windows 10/11 Pro, Enterprise, or Education (required for Hyper-V)
-- Docker Desktop for Windows
-- Lucid Link drive mounted
-- PowerShell
-- At least 4GB of available RAM for the Elastic Stack
+This repository contains the Windows-compatible version of sending LucidLink audit trail logs to Elasticsearch and Kibana. It uses fluent-bit running as a Windows Service to send audit trail logs and Docker Desktop to spin up Elasticsearch for log indexing and Kibana for visualization.
 
 ## System Requirements
 
 - Windows 10/11 Pro, Enterprise, or Education (required for Hyper-V)
 - Docker Desktop for Windows
-- Lucid Link drive mounted (typically as L: drive)
+- LucidLink drive mounted (typically as L: drive)
 - PowerShell 5.1 or later
 - Minimum system requirements:
   - 4GB RAM for Elastic Stack
