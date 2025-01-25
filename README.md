@@ -1,6 +1,6 @@
 # Lucid Link Audit Trail >> Elasticsearch and Kibana - Windows Version
 
-This repository contains the Windows-compatible version of sending LucidLink audit trail logs to Elasticsearch and Kibana. It uses fluent-bit running as a Windows Service to send audit trail logs and Docker Desktop to spin up Elasticsearch for log indexing and Kibana for visualization.
+This repository contains the Windows-compatible version of sending LucidLink audit trail logs to Elasticsearch and Kibana. It uses fluent-bit agent running as a Windows Service to send audit trail logs and Docker Desktop to spin up Elasticsearch for log indexing and Kibana for visualization.
 
 ## System Requirements
 
