@@ -44,7 +44,7 @@ All setup and service management commands must be run from an Administrator Powe
    cd ll-audit-trail-es-windows
    ```
 
-2. Start Elasticsearch:
+2. Start Elasticsearch and Kibana:
    ```powershell
    .\start_docker_compose.cmd
    ```
