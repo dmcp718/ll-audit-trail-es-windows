@@ -49,60 +49,29 @@ services:
       - elasticsearch-node1
 
   kibana-setup:
-    image: curlimages/curl:latest
+    image: curlimages/curl:8.00.1
+    container_name: kibana-setup
     volumes:
       - type: bind
         source: .\imports.ndjson
-        target: /usr/share/kibana/saved_objects/imports.ndjson
+        target: /imports.ndjson
         read_only: true
-    entrypoint: ["curl", "-X", "POST", "http://kibana:5601/api/saved_objects/_import", "-H", "kbn-xsrf: true", "--form", "file=@/usr/share/kibana/saved_objects/imports.ndjson"]
     networks:
       - elasticsearch-net
     depends_on:
       - kibana
-
-  fluent-bit:
-    build:
-      context: .
-      dockerfile: Dockerfile-fluent-bit
-    container_name: fluent-bit
-    volumes:
-      - type: bind
-        source: .\fs-audit-trail.yaml
-        target: /fluent-bit/etc/fs-audit-trail.yaml
-        read_only: true
-      - type: bind
-        source: ./json-parser.conf
-        target: /fluent-bit/etc/parsers.conf
-        read_only: true
-      - 'L:/:/media/lucidlink:rw'
-      - type: volume
-        source: fluent-bit-db
-        target: /fluent-bit/db
-    environment:
-      - FB_LOG_LEVEL=info
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    networks:
-      - elasticsearch-net
-    depends_on:
-      - elasticsearch-node1
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+    command: >
+      sh -c "
+        echo 'Waiting for Kibana to start...' &&
+        while ! curl -s http://kibana:5601/api/status | grep -q '\"overall\":{\"level\":\"available\"'; do
+          sleep 5
+        done &&
+        echo 'Kibana is up - importing saved objects' &&
+        curl -X POST http://kibana:5601/api/saved_objects/_import?overwrite=true -H 'kbn-xsrf: true' --form file=@/imports.ndjson
+      "
 
 volumes:
   elasticsearch-data1:
-    driver: local
-  fluent-bit-db:
-    driver: local
 
 networks:
   elasticsearch-net:

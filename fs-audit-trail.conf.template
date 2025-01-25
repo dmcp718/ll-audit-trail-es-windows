@@ -1,0 +1,50 @@
+[SERVICE]
+    Flush           1
+    Daemon          off
+    Log_Level       debug
+    HTTP_Server     On
+    HTTP_Listen     0.0.0.0
+    HTTP_Port       2020
+    Parsers_File    C:\fluent-bit\conf\parsers.conf
+
+[INPUT]
+    Name           tail
+    Path           ${FSMOUNT}\.lucid_audit\*\*\*\*.log
+    Parser         json
+    DB             C:\fluent-bit\db\logs.db
+    Read_From_Head true
+    Path_Key       source.filename
+    Offset_Key     source.offset
+    Refresh_Interval 5
+    Skip_Empty_Lines On
+    Skip_Long_Lines  On
+    DB.Sync         Full
+
+[FILTER]
+    Name          parser
+    Match         *
+    Key_Name      log
+    Parser        json
+    Reserve_Data  Off
+
+[FILTER]
+    Name          lua
+    Match         *
+    call          parse_time
+    time_as_table true
+    code          function parse_time(tag, timestamp, record) local recordTimestamp; if record["timestamp"] then local microseconds = record["timestamp"]; recordTimestamp = { sec = math.floor(microseconds / 1000000), nsec = (microseconds % 1000000) * 1000 }; record["timestamp"] = nil; return 1, recordTimestamp, record; end; return 0, timestamp, record; end
+
+[OUTPUT]
+    Name              es
+    Match             *
+    Host              localhost
+    Port              9200
+    Index             audit-trail
+    Type              _doc
+    Generate_ID       On
+    Suppress_Type_Name On
+    Buffer_Size       2MB
+    Replace_Dots      On
+    Logstash_Format   Off
+    Trace_Output      On
+    Trace_Error       On
